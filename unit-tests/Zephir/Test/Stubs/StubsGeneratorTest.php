@@ -16,64 +16,80 @@ use Zephir\FileSystem\FileSystemInterface;
 use Zephir\Test\KernelTestCase;
 use Zephir\ClassDefinition;
 use Zephir\Config;
+use Zephir\Parser\Parser;
 use Zephir\Stubs\Generator;
 use Zephir\CompilerFile;
 use Zephir\AliasManager;
 
 class StubsGeneratorTest extends KernelTestCase
 {
-    public function ztestItCanBuildClass()
+    public function expectedStub()
     {
-        $files = [
-            './unit-tests/fixtures/class-definition-1.php',
-        ];
-
-        $classDefinition = new ClassDefinition('Test', 'TestStubGenerator');
-        $config = new Config();
-        $test = new Generator($files, $config);
-
-        $expectedStub = <<<DOC
+        return <<<DOC
 <?php
 
-namespace Test;
+namespace Fixtures\Ide_Stubs;
 
-class TestStubGenerator
+use Fixtures\Ide_Stubs\Interfaces\DiInterfaceExample;
+
+class BaseClassExample
 {
 
 }
 
 DOC;
-        $actual = $test->generate('./');
-        // $test->buildClass($classDefinition, "\t");
-        $this->assertSame($expectedStub, $actual);
     }
 
-    public function setUp(): void
+    /** @test */
+    public function itCanBuildClass()
     {
-        self::bootKernel();
+        self::bootKernel(['config_files' => [__DIR__.'/../../../config.yml']]);
 
-        $this->container = self::$kernel->getContainer();
+        $container = self::$kernel->getContainer();
+        $config = self::$kernel->getContainer()->get(Config::class);
 
-        $this->config = new Config();
-        $this->aliasManager = new AliasManager();
+        /** @var \Zephir\FileSystem\FileSystemInterface $compilerFs */
+        $compilerFs = $container->get(FileSystemInterface::class);
+
+        $file = './unit-tests/Zephir/fixtures/ide_stubs/BaseClassExample.zep';
+        $indent = "\t";
+
+        $parser = new Parser();
+        $parsed = $parser->parse($file);
+
+        $classDefinition = new ClassDefinition($parsed[0]['name'], $parsed[3]['name']);
+
+        /** @var \Zephir\CompilerFile $compilerFile */
+        $compilerFile = new CompilerFile($config, new AliasManager(), $compilerFs);
+
+        $test = new Generator($parsed, $config);
+
+        $generatedStub = $this->invokeMethod($test, 'buildClass', [$classDefinition, $indent]);
+
+        $this->assertSame($this->expectedStub(), $generatedStub);
+
+        $this->markTestIncomplete(
+            'This test has not been implemented yet.'
+        );
     }
 
     /**
-     * @test
+     * Call protected/private method of a class.
+     *
+     * @param object &$object Instantiated object that we will run method on
+     * @param string $methodName Method name to call
+     * @param array $parameters Array of parameters to pass into method
+     *
+     * @return mixed
+     * @throws \ReflectionException
      */
-    public function itCanGenerate(): void
+    public function invokeMethod(&$object, $methodName, $parameters = [])
     {
-        /** @var \Zephir\FileSystem\FileSystemInterface $filesystem */
-        $filesystem = $this->container->get(FileSystemInterface::class);
+        $reflection = new \ReflectionClass(\get_class($object));
 
-        $mockFiles = [
-            new CompilerFile($this->config, $this->aliasManager, $filesystem)
-        ];
+        $method = $reflection->getMethod($methodName);
+        $method->setAccessible(true);
 
-        $generator = new Generator($mockFiles, $this->config);
-        echo dirname(__FILE__);
-        // $test = $generator->generate();
-
-        $this->assertSame(1, 1);
+        return $method->invokeArgs($object, $parameters);
     }
 }
