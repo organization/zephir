@@ -849,13 +849,6 @@ final class CompilerFile implements FileInterface
         foreach ($this->ir as $topStatement) {
             switch ($topStatement['type']) {
                 case 'class':
-                    if ($interface || $class) {
-                        throw new CompilerException('More than one class defined in the same file', $topStatement);
-                    }
-                    $class = true;
-                    $this->compileClass($compilationContext, $this->namespace, $topStatement);
-                    break;
-
                 case 'interface':
                     if ($interface || $class) {
                         throw new CompilerException('More than one class defined in the same file', $topStatement);
