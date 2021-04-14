@@ -1853,7 +1853,7 @@ class ClassMethod
                     case 'callable':
                         if (isset($parametersToSeparate[$parameter['name']])) {
                             $symbolTable->mustGrownStack(true);
-                            if (isset($parameter['reference']) && $parameter['reference']) {
+                            if (!empty($parameter['reference'])) {
                                 $initCode .= "\t".'ZVAL_DEREF('.$parameter['name'].');'.PHP_EOL;
                                 $initCode .= "\t".'SEPARATE_ZVAL_NOREF('.$parameter['name'].');'.PHP_EOL;
                             } else {
@@ -1902,7 +1902,7 @@ class ClassMethod
                     $initCode .= "\t".'} else {'.PHP_EOL;
 
                     if (isset($parametersToSeparate[$name])) {
-                        if (isset($parameter['reference']) && $parameter['reference']) {
+                        if (!empty($parameter['reference'])) {
                             $initCode .= "\t\t".'ZVAL_DEREF('.$parameter['name'].');'.PHP_EOL;
                             $initCode .= "\t\t".'SEPARATE_ZVAL_NOREF('.$parameter['name'].');'.PHP_EOL;
                         } else {
