@@ -5,7 +5,8 @@ The format based on [Keep a Changelog](http://keepachangelog.com)
 and this project adheres to [Semantic Versioning](http://semver.org).
 
 ## [Unreleased]
-
+### Added
+- Add support for `passing variables by reference` [#203](https://github.com/zephir-lang/zephir/issues/203)
 
 ## [0.13.2] - 2021-04-10
 ### Fixed
