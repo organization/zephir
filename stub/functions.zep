@@ -25,8 +25,8 @@ class Functions
         return false == filter_var(ret, FILTER_VALIDATE_FLOAT, 20480);
     }
 
-	public function passByRef(int& i) -> void
-	{
-		let i += 10;
-	}
+    public function passByRef(var& i) -> void
+    {
+        let i += 10;
+    }
 }
