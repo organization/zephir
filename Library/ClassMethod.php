@@ -1806,6 +1806,14 @@ class ClassMethod
                     $dataType = $parameter['data-type'] ?? 'variable';
 
                     switch ($dataType) {
+                        case 'int':
+                        case 'uint':
+                        case 'long':
+                        case 'ulong':
+                        case 'bool':
+                            if (!isset($parameter['reference'])) {
+                                break;
+                            }
                         case 'variable':
                         case 'string':
                         case 'array':
@@ -1846,6 +1854,16 @@ class ClassMethod
                 }
 
                 switch ($dataType) {
+                    case 'int':
+                    case 'uint':
+                    case 'long':
+                    case 'ulong':
+                    case 'bool':
+                    case 'string':
+                    case 'array':
+                        if (!isset($parameter['reference'])) {
+                            break;
+                        }
                     case 'variable':
                     case 'resource':
                     case 'object':
