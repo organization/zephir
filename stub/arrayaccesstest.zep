@@ -43,4 +43,78 @@ class ArrayAccessTest
 
         return in_array(s, arr);
     }
+
+    public function issue1094Test1(const array items = null) -> bool
+    {
+        bool isItemsNULL;
+
+        // This syntax do not exist in Zephir...
+        //let isItemsNULL = null === items;
+
+        return isItemsNULL;
+    }
+
+    public function issue1094Test2(const array items = null) -> bool
+    {
+        bool isItemsNULL;
+
+        let isItemsNULL = items === null;
+
+        return isItemsNULL;
+    }
+
+    public function issue1094Test3(const array items = null) -> bool
+    {
+        bool isItemsNULL;
+
+        let isItemsNULL = is_null(items);
+
+        return isItemsNULL;
+    }
+
+    /**
+     * @issue https://github.com/zephir-lang/zephir/issues/1086
+     */
+    public static function issue1086Strict(array! params)
+    {
+        let params["test2"] = 1234;
+    }
+
+    /**
+     * @issue https://github.com/zephir-lang/zephir/issues/1086
+     */
+    public static function issue1086WontNullArrayAfterPassViaStaticWithStrictParams() -> array
+    {
+        array params;
+
+        let params = [];
+        let params["test"] = 123;
+
+        self::issue1086Strict(params);
+
+        return params;
+    }
+
+    /**
+     * @issue https://github.com/zephir-lang/zephir/issues/1086
+     */
+    public static function issue1086NotStrictParams(array params)
+    {
+        let params["test2"] = 1234;
+    }
+
+    /**
+     * @issue https://github.com/zephir-lang/zephir/issues/1086
+     */
+    public static function issue1086WontNullArrayAfterPassViaStaticWithoutStrictParams() -> array
+    {
+        array params;
+
+        let params = [];
+        let params["test"] = 123;
+
+        self::issue1086NotStrictParams(params);
+
+        return params;
+    }
 }
